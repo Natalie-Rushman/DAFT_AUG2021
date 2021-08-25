@@ -4,10 +4,11 @@
     Use appropriate join to write this query.
     */
      
-		/* Check again */
-SELECT `name`, COUNT(film_category.category_id) AS films_by_genre FROM category
-INNER JOIN film_category ON film.film_id = film_category.film_id
-GROUP BY category.category_id;
+		/* Count * FROM category */
+SELECT `name` AS category_name, COUNT(*) AS films_by_genre FROM category
+INNER JOIN film_category ON category.category_id = film_category.category_id
+GROUP BY category_name
+ORDER BY films_by_genre DESC;
 
     /*
     Which actor has appeared in the most films?
@@ -47,11 +48,10 @@ GROUP BY staff_id;
     Display the total amount rung up by each staff member in August of 2005.
     */
     
-    /* Check again */
 SELECT staff.last_name, SUM(payment.amount) FROM staff
 INNER JOIN payment ON payment.staff_id = staff.staff_id
-GROUP BY staff.staff_id
-HAVING payment.payment_date = "2005-08-%";
+WHERE month(payment.payment_date) = 8 and year(payment.payment_date) = 2005
+GROUP BY staff.staff_id;
     
     /*
     List each film and the number of actors who are listed for that film.

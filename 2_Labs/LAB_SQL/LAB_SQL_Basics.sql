@@ -254,7 +254,8 @@ ORDER BY district_id ASC;/* sorted by the district_id in ascending order */
 /*
 Query 14
 
-In the card table, how many cards exist for each type? Rank the result starting with the most frequent type.
+In the card table, how many cards exist for each type? 
+Rank the result starting with the most frequent type.
 
 Expected result:
 
@@ -264,8 +265,9 @@ gold	88
 
 */
 
-SELECT DISTINCT `type`, COUNT(*) FROM bank.card /* how many cards exist for each type? */
-ORDER BY `type` ASC; /* Rank the result starting with the most frequent type.*/
+SELECT DISTINCT `type`, COUNT(*) AS Nbr_Cards FROM bank.card /* how many cards exist for each type? */
+GROUP BY `type`
+ORDER BY Nbr_Cards DESC; /* Rank the result starting with the most frequent type.*/
 
 /*
 Query 15
@@ -287,8 +289,9 @@ Expected result:
 
 */
 
-
-
+SELECT account_id, SUM(amount) AS Sum_Amount FROM bank.loan /* based on the sum of all of their loan amounts */
+GROUP BY account_id
+ORDER BY Sum_Amount DESC LIMIT 10; /* print the top 10 account_ids */
 
 /*
 Query 16
@@ -333,8 +336,8 @@ Expected result:
 971225	60	1
 
 */
-
-SELECT DISTINCT duration, COUNT(loan_id) as Nbr_Loans, `date` 
+         /* No result */
+SELECT `date`, COUNT(*) as Nbr_Loans 
 FROM bank.loan /* count the number of loans issued for each unique loan duration */
 GROUP BY loan_id, duration, `date`
 HAVING `date` = "9712%" /* for each day in December 1997 */
@@ -351,15 +354,18 @@ Expected result:
 396	VYDAJ	1485814.400024414
 
 */
-
-
-
-
+		/* Does not display */ /* output should have the account_id, the type and the sum of amount, named as total_amount */
+SELECT account_id, `type`, SUM(amount) AS total_amount FROM bank.trans /* sum the amount of transactions for each type (VYDAJ = Outgoing, PRIJEM = Incoming) */
+WHERE account_id = 396 /* for account_id 396 */
+GROUP BY 'type'
+ORDER BY `type` ASC;/* Sort alphabetically by type. */
 
 /*
 Query 19
 
-From the previous output, translate the values for type to English, rename the column to transaction_type, round total_amount down to an integer
+From the previous output, translate the values for type to English, 
+rename the column to transaction_type, 
+round total_amount down to an integer.
 
 Expected result:
 
@@ -368,8 +374,9 @@ Expected result:
 
 */
 
-
-
+SELECT floor(total_amount) AS Round_Amount FROM bank.trans; /* round total_amount down to an integer */
+SELECT TRANSLATE('PRIJEM', 'PRIJEM', 'INCOMING'), ('VYDAJ','VYDAJ', 'OUTGOING');	/* translate the values for type to English */
+SELECT REPLACE('total_amount','total_amount','transaction_type'); /* rename the column to transaction_type */
 
 /*
 Query 20
@@ -382,8 +389,8 @@ Expected result:
 
 */
 
-
-
+/* returns only one row */
+/* with a column for incoming amount, outgoing amount and the difference */
 
 /*
 Query 21
@@ -402,19 +409,5 @@ Expected result:
 9656	702786
 2227	696564
 6473	692580
-
-    © 2021 GitHub, Inc.
-    Terms
-    Privacy
-    Security
-    Status
-    Docs
-
-    Contact GitHub
-    Pricing
-    API
-    Training
-    Blog
-    About
 
 */

@@ -316,7 +316,8 @@ ORDER BY `date` DESC; /* ordered by date in descending order. */
 /*
 Query 17
 
-In the loan table, for each day in December 1997, count the number of loans issued for each unique loan duration, ordered by date and duration, both in ascending order. You can ignore days without any loans in your output.
+In the loan table, for each day in December 1997, count the number of loans issued for each unique loan duration, 
+ordered by date and duration, both in ascending order. You can ignore days without any loans in your output.
 
 Expected result:
 
@@ -336,17 +337,20 @@ Expected result:
 971225	60	1
 
 */
-         /* No result */
+		
 SELECT `date`, COUNT(*) as Nbr_Loans 
 FROM bank.loan /* count the number of loans issued for each unique loan duration */
-GROUP BY loan_id, duration, `date`
-HAVING `date` = "9712%" /* for each day in December 1997 */
-ORDER BY `date`, duration ASC; /* ordered by date and duration, both in ascending order. */
+WHERE `date`LIKE "9712%" /* for each day in December 1997 */ /* Unknown syntax, check again */
+GROUP BY `date`, duration 
+HAVING count(*) > 0
+ORDER BY 'date'; /* ordered by date and duration, both in ascending order. */
 
 /*
 Query 18
 
-In the trans table, for account_id 396, sum the amount of transactions for each type (VYDAJ = Outgoing, PRIJEM = Incoming). Your output should have the account_id, the type and the sum of amount, named as total_amount. Sort alphabetically by type.
+In the trans table, for account_id 396, sum the amount of transactions for each type (VYDAJ = Outgoing, PRIJEM = Incoming). 
+Your output should have the account_id, the type and the sum of amount, named as total_amount. 
+Sort alphabetically by type.
 
 Expected result:
 
@@ -354,10 +358,10 @@ Expected result:
 396	VYDAJ	1485814.400024414
 
 */
-		/* Does not display */ /* output should have the account_id, the type and the sum of amount, named as total_amount */
+
 SELECT account_id, `type`, SUM(amount) AS total_amount FROM bank.trans /* sum the amount of transactions for each type (VYDAJ = Outgoing, PRIJEM = Incoming) */
 WHERE account_id = 396 /* for account_id 396 */
-GROUP BY 'type'
+GROUP BY `type`
 ORDER BY `type` ASC;/* Sort alphabetically by type. */
 
 /*
@@ -374,14 +378,21 @@ Expected result:
 
 */
 
-SELECT floor(total_amount) AS Round_Amount FROM bank.trans; /* round total_amount down to an integer */
-SELECT TRANSLATE('PRIJEM', 'PRIJEM', 'INCOMING'), ('VYDAJ','VYDAJ', 'OUTGOING');	/* translate the values for type to English */
-SELECT REPLACE('total_amount','total_amount','transaction_type'); /* rename the column to transaction_type */
+SELECT account_id, `type` as 'transaction_type', FLOOR(SUM(amount)) AS total_amount FROM bank.trans 
+WHERE account_id = 396 
+GROUP BY `type`
+ORDER BY `type` ASC;
+
+SET SQL_SAFE_UPDATES = 0;
+UPDATE trans SET `type`="INCOMING" WHERE `type`="PRIJEM"; 
+UPDATE trans SET `type`="OUTGOING" WHERE `type`="VYDAJ";
+SET SQL_SAFE_UPDATES = 1;
 
 /*
 Query 20
 
-From the previous result, modify your query so that it returns only one row, with a column for incoming amount, outgoing amount and the difference.
+From the previous result, modify your query so that it returns only one row, 
+with a column for incoming amount, outgoing amount and the difference.
 
 Expected result:
 
@@ -389,8 +400,13 @@ Expected result:
 
 */
 
-/* returns only one row */
-/* with a column for incoming amount, outgoing amount and the difference */
+SELECT account_id,
+	FLOOR(SUM(IF (`type`='INCOMING', amount, 0))) AS Incoming,
+    FLOOR(SUM(IF (`type`='OUTGOING', amount, 0))) AS Outgoing, /* Value does not display */
+    FLOOR(SUM(IF (`type`='INCOMING', amount, 0))) - FLOOR(SUM(IF (`type`='OUTGOING', amount, 0))) AS Difference
+FROM trans 
+WHERE account_id=396
+GROUP BY account_id;  
 
 /*
 Query 21
@@ -411,3 +427,8 @@ Expected result:
 6473	692580
 
 */
+
+SELECT account_id, FLOOR(SUM(IF (`type`='INCOMING', amount, 0))) - FLOOR(SUM(IF (`type`='OUTGOING', amount, 0))) AS Difference
+FROM trans
+GROUP BY account_id
+ORDER BY Difference DESC LIMIT 10;

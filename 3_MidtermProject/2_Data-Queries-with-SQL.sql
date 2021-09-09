@@ -107,3 +107,15 @@ GROUP BY zip_code
 HAVING low_priced_area <= 400000
 ORDER BY low_priced_area DESC;
 
+/* Most expensive house */
+SELECT price AS Price, m2_living AS Size, zip_code, year_construction, year_renovation, KCGS_grade, KCGS_waterfront FROM house_price_regression.house_price_data
+WHERE Price = 7700000;
+
+/* biggest house */
+SELECT price AS Price, m2_living AS Size, zip_code, year_construction, year_renovation, KCGS_grade, KCGS_waterfront FROM house_price_regression.house_price_data
+WHERE Price = 2280000;
+
+SELECT kcgs_waterfront, price FROM house_price_data
+WHERE kcgs_waterfront = 1 AND price < 650000; 
+/* 29 houses (from 163) with waterfront cheaper than 600000 USD */
+

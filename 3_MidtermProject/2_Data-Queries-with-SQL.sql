@@ -74,7 +74,7 @@ ORDER BY middle_price DESC;
 
 SELECT (year_renovation) AS renovated_houses, AVG(price) AS middle_price FROM house_price_data
 GROUP BY year_renovation
-HAVING year_renovation <> 0;
+HAVING year_renovation != 0;
 
 SELECT AVG(price/(m2_living+m2_lot)) AS m2_price FROM house_price_data; /* 642,70 */
 
@@ -118,4 +118,12 @@ WHERE Price = 2280000;
 SELECT kcgs_waterfront, price FROM house_price_data
 WHERE kcgs_waterfront = 1 AND price < 650000; 
 /* 29 houses (from 163) with waterfront cheaper than 600000 USD */
+
+SELECT year_construction FROM house_price_data
+ORDER BY year_construction ASC LIMIT 1;
+
+SELECT year_construction, COUNT(*) AS houses_per_year FROM house_price_data
+GROUP BY year_construction
+ORDER BY houses_per_year DESC; /* Most houses were built in 2014 (559) */
+
 
